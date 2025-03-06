@@ -3,7 +3,6 @@ const ShowSchedule = require("../../models/system/showSchedule.model")
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { responseSuccess } = require('../../common/helpers/responsive.helper');
-const { ACCESS_TOKEN_SECRET, ACCESS_TOKEN_EXPIRES } = require('../../common/constant/app.constant');
 
 const buildQuery = (where) => {
     let query = {};
