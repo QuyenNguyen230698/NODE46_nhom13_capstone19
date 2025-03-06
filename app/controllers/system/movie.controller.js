@@ -69,6 +69,47 @@ const movieAdminController = {
       result = false;
       res.status(400).json({ result, message: error.message });
     }
+  },
+
+  findMovie: async (req, res) => {
+    try {
+      const searchCriteria = req.body; // Accept any search criteria
+
+      // Find all movies based on input criteria
+      const movies = await Movie.find(searchCriteria);
+
+      if (movies.length === 0) {
+        return res.status(404).json({
+          result: false,
+          message: 'No movies found'
+        });
+      }
+
+      // Return movie data
+      const movieData = movies.map(movie => ({
+        _id: movie._id,
+        movieName: movie.movieName,
+        movieImage: movie.movieImage,
+        movieDescription: movie.movieDescription,
+        movieTrailer: movie.movieTrailer,
+        movieDuration: movie.movieDuration,
+        releaseDate: movie.releaseDate,
+        rating: movie.rating,
+        isShowing: movie.isShowing,
+        comingSoon: movie.comingSoon
+      }));
+
+      res.status(200).json({
+        result: true,
+        message: 'Movies found',
+        data: movieData
+      });
+    } catch (error) {
+      res.status(500).json({
+        result: false,
+        message: error.message
+      });
+    }
   }
 };
 

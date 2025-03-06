@@ -11,6 +11,7 @@ router.post("/create", authenticateJWT, checkAdminRole, movieAdminController.cre
 router.post("/update", authenticateJWT, checkAdminRole, movieAdminController.updateMovie);
 router.post("/delete", authenticateJWT, checkAdminRole, movieAdminController.deleteMovie);
 router.post("/update-status", authenticateJWT, checkAdminRole, movieAdminController.updateStatusMovie);
+router.post("/find-movie", authenticateJWT, checkAdminRole, movieAdminController.findMovie)
 
 // Landing Page Only
 router.get("/", movieController.getMovies);
