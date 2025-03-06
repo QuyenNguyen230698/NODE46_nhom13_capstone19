@@ -105,7 +105,7 @@ const user = {
     },
     "/api/users/list": {
     get: {
-        tags: ["Get list of users"],
+        tags: ["Get list users"],
         summary: "Get list of users",
         description: "Retrieve a list of users. Requires Bearer Token authentication.",
         security: [
@@ -127,7 +127,7 @@ const user = {
             }
         }
     }
-}
+    },
 }
 
 module.exports = user
