@@ -114,18 +114,29 @@ const movieAdminController = {
 
   createSchedule: async (req, res) => {
     try {
-      const { maRap, maCumRap, theaterCode, releaseDate, price } = req.body;
-      const scheduleCreated = await movieAdminServices.createSchedule(maRap, maCumRap, theaterCode, releaseDate, price);
+      const { maRap, maCumRap, theaterCode, releaseDate, price, movieCode } = req.body;
+      const scheduleCreated = await movieAdminServices.createSchedule(maRap, maCumRap, theaterCode, releaseDate, price, movieCode);
       res.status(200).json({ result: true, message: 'Schedule created successfully', data: scheduleCreated });
     } catch (error) {
       console.error('Error creating Schedule:', error);
       res.status(500).json({ message: 'Error creating Schedule', error: error.message });
     }
+  },
+
+  findSchedule: async (req, res) => {
+    try {
+      const { maLichChieu } = req.body;
+      const findSchedule = await movieAdminServices.findSchedule(maLichChieu);
+      res.status(200).json({ result: true, message: 'Schedule found successfully', data: findSchedule });
+    } catch (error) {
+      console.error('Error finding schedule:', error);
+      res.status(500).json({ message: 'Error finding schedule', error: error.message });
+    }
   }
 };
 
 const movieController = {
-    getMovies: async (req, res) => {
+      getMovies: async (req, res) => {
         try {
           const { requiresCounts = false, skip = 0, take = 10, where = [], search = [], sorted = [] } = req.body;
     
@@ -138,6 +149,28 @@ const movieController = {
         } catch (error) {
           console.error('Error fetching movie data:', error);
           res.status(500).json({ message: 'Error fetching movie data', error: error.message });
+        }
+      },
+      getMovieDetail: async (req, res) => {
+        try {
+          const { movieCode } = req.body;
+          const movieDetail = await movieServices.getMovieDetail(movieCode);
+          if (!movieDetail) {
+            return res.status(404).json({
+              result: false,
+              message: 'Movie not found'
+            });
+          }
+          res.status(200).json({
+            result: true,
+            message: 'Movie found',
+            data: movieDetail
+          });
+        } catch (error) {
+          res.status(500).json({
+            result: false,
+            message: error.message
+          });
         }
       },
 }

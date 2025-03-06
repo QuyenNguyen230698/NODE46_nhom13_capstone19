@@ -140,20 +140,31 @@ const movieAdminServices = {
       }
   },
 
-  createSchedule: async (maRap, maCumRap, theaterCode, releaseDate, price) => {
+  createSchedule: async (maRap, maCumRap, theaterCode, releaseDate, price, movieCode) => {
     try {
       const newSchedule = new ShowSchedule({
         maRap,
         maCumRap,
         theaterCode,
         releaseDate,
-        price
+        price,
+        movieCode
       });
       await newSchedule.save();
       return responseSuccess(`Schedule created successfully`);
     } catch (error) {
       console.error('Error creating schedule:', error);
       throw new Error('Failed to create schedule');
+    }
+  },
+
+  findSchedule: async (maLichChieu) => {
+    try {
+      const schedule = await ShowSchedule.findOne({ maLichChieu });
+      return schedule;
+    } catch (error) {
+      console.error('Error finding schedule:', error);
+      throw new Error('Failed to find schedule');
     }
   }
 };
@@ -199,7 +210,16 @@ const movieServices = {
             console.error('Error fetching movie data:', error);
             throw new Error('Failed to fetch movie data');
         }
-      },
+    },
+    getMovieDetail: async (movieCode) => {
+        try {
+            const movieDetail = await Movie.findOne({ movieCode });
+            return movieDetail;
+        } catch (error) {
+            console.error('Error getting movie detail:', error);
+            throw new Error('Failed to get movie detail');
+        }
+    }
 }
 
 module.exports = { movieAdminServices, movieServices };
