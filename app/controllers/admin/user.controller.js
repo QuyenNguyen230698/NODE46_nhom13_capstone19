@@ -66,6 +66,28 @@ const userController = {
     }
   },
 
+  loginAdmin: async (req, res) => {
+    let result;
+    try {
+      const { email, password } = req.body;
+      const { user, token } = await userServices.loginAdmin(email, password);
+      const data = {
+        _id: user._id,
+        email: user.email,
+        phoneNumber: user.phoneNumber,
+        username: user.username,
+        roles: user.roles,
+        avatar: user.avatar,
+        position: user.position
+      };
+      result = true;
+      res.status(200).json({ result, message: 'Login successful', data, token });
+    } catch (error) {
+      result = false;
+      res.status(400).json({ result, message: error.message });
+    }
+  },
+
   updateRole: async (req, res) => {
     let result;
     try {

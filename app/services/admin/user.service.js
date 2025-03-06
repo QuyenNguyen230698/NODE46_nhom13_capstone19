@@ -83,13 +83,44 @@ const userServices = {
     // Find the user by email
     const user = await User.findOne({ email });
 
+    // check user
+    if (!user) {
+      throw new Error('User not found');
+    }
+
     // check status
     if (user.status === 'INACTIVE') {
       throw new Error('User is inactive please contact admin !');
     }
 
+    // Compare the provided password with the hashed password
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      throw new Error('Invalid password');
+    }
+
+    // Generate a token
+    const token = jwt.sign({ userId: user._id }, ACCESS_TOKEN_SECRET, { expiresIn: ACCESS_TOKEN_EXPIRES });
+    return { user, token };
+  },
+
+  loginAdmin: async (email, password) => {
+    // Find the user by email
+    const user = await User.findOne({ email });
+
+    // check user
     if (!user) {
       throw new Error('User not found');
+    }
+
+    // check roles
+    if (user.roles !== 'ADMIN') {
+      throw new Error('User is not an admin please contact super admin !');
+    }
+
+    // check status
+    if (user.status === 'INACTIVE') {
+      throw new Error('User is inactive please contact super admin !');
     }
 
     // Compare the provided password with the hashed password
