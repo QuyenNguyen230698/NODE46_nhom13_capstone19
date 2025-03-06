@@ -1,4 +1,5 @@
 const Movie = require("../../models/system/movie.model");
+const ShowSchedule = require("../../models/system/showSchedule.model")
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { responseSuccess } = require('../../common/helpers/responsive.helper');
@@ -137,6 +138,23 @@ const movieAdminServices = {
         console.error('Error updating movie status:', error);
         throw new Error('Failed to update movie status');
       }
+  },
+
+  createSchedule: async (maRap, maCumRap, theaterCode, releaseDate, price) => {
+    try {
+      const newSchedule = new ShowSchedule({
+        maRap,
+        maCumRap,
+        theaterCode,
+        releaseDate,
+        price
+      });
+      await newSchedule.save();
+      return responseSuccess(`Schedule created successfully`);
+    } catch (error) {
+      console.error('Error creating schedule:', error);
+      throw new Error('Failed to create schedule');
+    }
   }
 };
 

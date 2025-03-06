@@ -131,6 +131,14 @@ const userController = {
     try {
       const searchCriteria = req.body; // Accept any search criteria
 
+      // Validate and sanitize search criteria
+      if (typeof searchCriteria !== 'object' || Array.isArray(searchCriteria)) {
+        return res.status(400).json({
+          result: false,
+          message: 'Invalid search criteria'
+        });
+      }
+
       // Find all users based on input criteria
       const users = await User.find(searchCriteria);
 

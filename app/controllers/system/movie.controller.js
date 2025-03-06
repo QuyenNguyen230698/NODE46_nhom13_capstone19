@@ -110,6 +110,17 @@ const movieAdminController = {
         message: error.message
       });
     }
+  },
+
+  createSchedule: async (req, res) => {
+    try {
+      const { maRap, maCumRap, theaterCode, releaseDate, price } = req.body;
+      const scheduleCreated = await movieAdminServices.createSchedule(maRap, maCumRap, theaterCode, releaseDate, price);
+      res.status(200).json({ result: true, message: 'Schedule created successfully', data: scheduleCreated });
+    } catch (error) {
+      console.error('Error creating Schedule:', error);
+      res.status(500).json({ message: 'Error creating Schedule', error: error.message });
+    }
   }
 };
 
