@@ -18,7 +18,7 @@ const user = {
     },
     "/api/users/register": {
         post: {
-            tags: ["register"],
+            tags: ["users"],
             security: [
                 {
                     bearerAuth: [],
@@ -67,7 +67,7 @@ const user = {
     },
     "/api/users/login": {
     post: {
-        tags: ["login"],
+        tags: ["users"],
         summary: "User login",
         description: "Endpoint for user login",
         requestBody: {
@@ -105,7 +105,7 @@ const user = {
     },
     "/api/users/list": {
     get: {
-        tags: ["Get list users"],
+        tags: ["users"],
         summary: "Get list of users",
         description: "Retrieve a list of users. Requires Bearer Token authentication.",
         security: [

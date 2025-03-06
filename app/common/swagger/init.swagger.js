@@ -1,4 +1,5 @@
 const user = require('./user.swagger')
+const movie = require('./movie.swagger')
 
 const swaggerDocument = {
     openapi: "3.1.0",
@@ -23,7 +24,8 @@ const swaggerDocument = {
         },
     },
     paths: {
-        ...user
+        ...user,
+        ...movie
     },
 }
 
