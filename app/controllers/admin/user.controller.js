@@ -125,6 +125,45 @@ const userController = {
       result = false;
       res.status(400).json({ result, message: error.message });
     }
+  },
+
+  findUser: async (req, res) => {
+    try {
+      const searchCriteria = req.body; // Accept any search criteria
+
+      // Find all users based on input criteria
+      const users = await User.find(searchCriteria);
+
+      if (users.length === 0) {
+        return res.status(404).json({
+          result: false,
+          message: 'No users found'
+        });
+      }
+
+      // Return user data
+      const userData = users.map(user => ({
+        _id: user._id,
+        email: user.email,
+        phoneNumber: user.phoneNumber,
+        username: user.username,
+        roles: user.roles,
+        avatar: user.avatar,
+        position: user.position,
+        status: user.status
+      }));
+
+      res.status(200).json({
+        result: true,
+        message: 'Users found',
+        data: userData
+      });
+    } catch (error) {
+      res.status(500).json({
+        result: false,
+        message: error.message
+      });
+    }
   }
 };
 

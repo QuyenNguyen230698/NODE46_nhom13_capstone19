@@ -14,5 +14,6 @@ router.post("/login-admin", userController.loginAdmin)
 router.post("/update-role", authenticateJWT, checkAdminRole, userController.updateRole)
 router.post("/update", authenticateJWT, checkAdminRole, userController.updateUser)
 router.post("/delete", authenticateJWT, checkAdminRole, userController.deleteUser)
+router.post("/find-user", authenticateJWT, checkAdminRole, userController.findUser)
 
 module.exports = router;
