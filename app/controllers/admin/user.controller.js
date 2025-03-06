@@ -27,7 +27,7 @@ const userController = {
 
   registerUser: async (req, res) => {
     try {
-      const { username, email, password } = req.body;
+      const { username, email, password, phoneNumber } = req.body;
 
       // Check if the email already exists
       const existingUser = await User.findOne({ email });
@@ -36,7 +36,7 @@ const userController = {
       }
 
       // Proceed to create the user
-      const createUser = await userServices.registerUser(username, email, password);
+      const createUser = await userServices.registerUser(username, email, password, phoneNumber);
       res.status(201).json(createUser);
     } catch (error) {
       console.error('Error registering user:', error);

@@ -63,13 +63,13 @@ const userServices = {
     }
   },
 
-  registerUser: async (username, email, password) => {
+  registerUser: async (username, email, password, phoneNumber) => {
     try {
       // Hash the password
       const hashedPassword = await bcrypt.hash(password, 10);
 
       // Create the user with hashed password
-      const user = new User({ username, email, password: hashedPassword });
+      const user = new User({ username, email, password: hashedPassword, phoneNumber });
       await user.save();
 
       return responseSuccess(`User ${username} created successfully`);
