@@ -94,6 +94,17 @@ const theaterController = {
           console.error('Error finding theater:', error);
           res.status(500).json({ message: 'Error finding theater', error: error.message });
         }
+      },
+      createBooking: async (req, res) => {
+        try {
+          const { email, maLichChieu, danhSachVe } = req.body;
+
+          const newBooking = await theaterServices.createBooking(email, maLichChieu, danhSachVe);
+          res.status(200).json({ message: 'Booking created successfully', data: newBooking });
+        } catch (error) {
+          console.error('Error creating booking:', error);
+          res.status(500).json({ message: 'Error creating booking', error: error.message });
+        }
       }
 }
 

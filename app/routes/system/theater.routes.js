@@ -10,4 +10,6 @@ router.get("/chair", theaterController.getChairs);
 router.post("/create-chair", theaterController.createChair);
 router.post("/find", theaterController.findTheater);
 
+router.post("/booking", theaterController.createBooking);
+
 module.exports = router;

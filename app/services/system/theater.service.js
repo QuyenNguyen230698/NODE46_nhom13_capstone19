@@ -2,6 +2,7 @@ const Theater = require("../../models/system/theater.model");
 const { responseSuccess } = require('../../common/helpers/responsive.helper');
 const TheaterComplex = require('../../models/system/theaterComplex.model');
 const Chair = require('../../models/system/chair.model');
+const Booking = require('../../models/system/booking.model');
 
 const theaterServices = {
     getTheaters: async (req) => {
@@ -31,6 +32,20 @@ const theaterServices = {
         } catch (error) {
             console.error('Error fetching chair data:', error);
             throw new Error('Failed to fetch chair data');
+        }
+    },
+    createBooking: async (email, maLichChieu, danhSachVe) => {
+        try {
+            const newBooking = new Booking({
+                email,
+                maLichChieu,
+                danhSachVe
+            });
+            await newBooking.save();
+            return responseSuccess('Booking created successfully', newBooking);
+        } catch (error) {
+            console.error('Error creating booking:', error);
+            throw new Error('Failed to create booking');
         }
     }
 }
