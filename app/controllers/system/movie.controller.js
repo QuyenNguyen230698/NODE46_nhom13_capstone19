@@ -132,6 +132,17 @@ const movieAdminController = {
       console.error('Error finding schedule:', error);
       res.status(500).json({ message: 'Error finding schedule', error: error.message });
     }
+  },
+
+  createBanner: async (req, res) => {
+    try {
+      const { movieCode,bannerImage } = req.body;
+      const createBanner = await movieAdminServices.createBanner(movieCode,bannerImage);
+      res.status(200).json({ result: true, message: 'Create Banner Successfully', data: createBanner });
+    } catch (error) {
+      console.error('Error finding schedule:', error);
+      res.status(500).json({ message: 'Error finding schedule', error: error.message });
+    }
   }
 };
 
@@ -173,6 +184,17 @@ const movieController = {
           });
         }
       },
+      getBanner: async (req,res) => {
+        try {
+          const dataBanner = await movieServices.getBanner();
+          res.status(200).json({
+            result: dataBanner
+          });
+        } catch (error) {
+          console.error('Error fetching banner data:', error);
+          res.status(500).json({ message: 'Error fetching banner data', error: error.message });
+        }
+      }
 }
 
 module.exports = { movieAdminController, movieController };

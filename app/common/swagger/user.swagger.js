@@ -693,6 +693,48 @@ const user = {
             }
         }
     },
+    "/api/movies/create-banner": {
+        post: {
+            tags: ["Movie Admin"],
+            summary: "Create New Banner",
+            description: "Need movieCode, bannerImage",
+            security: [
+                {
+                    bearerAuth: []
+                }
+            ],
+            requestBody: {
+                required: true,
+                content: {
+                    "application/json": {
+                        schema: {
+                            type: "object",
+                            properties: {
+                                movieCode: {
+                                    type: "number",
+                                },
+                                bannerImage: {
+                                    type: "string",
+                                }
+                            },
+                            required: ["movieCode", "bannerImage"]
+                        }
+                    }
+                }
+            },
+            responses: {
+                "200": {
+                    description: "Success",
+                },
+                "400": {
+                    description: "Bad Request",
+                },
+                "401": {
+                    description: "Unauthorized",
+                }
+            }
+        }
+    },
 
     "/api/cloudinary/upload": {
         post: {

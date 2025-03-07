@@ -1,5 +1,6 @@
 const Movie = require("../../models/system/movie.model");
 const ShowSchedule = require("../../models/system/showSchedule.model")
+const Banner = require('../../models/system/banner.model')
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { responseSuccess } = require('../../common/helpers/responsive.helper');
@@ -165,6 +166,20 @@ const movieAdminServices = {
       console.error('Error finding schedule:', error);
       throw new Error('Failed to find schedule');
     }
+  },
+
+  createBanner: async (movieCode,bannerImage) => {
+    try {
+      const newBanner = new Banner({
+        movieCode,
+        bannerImage
+      })
+      await newBanner.save()
+      return responseSuccess(`Banner ${movieCode} created successfully`);
+    } catch (error) {
+      console.error('Error creating Banner:', error);
+      throw new Error('Failed to create Banner');
+    }
   }
 };
 
@@ -218,6 +233,15 @@ const movieServices = {
             console.error('Error getting movie detail:', error);
             throw new Error('Failed to get movie detail');
         }
+    },
+    getBanner: async () => {
+      try {
+        const dataBanner = await Banner.find({});
+        return dataBanner
+      } catch (error) {
+        console.error('Error getting banner data:', error);
+        throw new Error('Failed to get banner data');
+      }
     }
 }
 

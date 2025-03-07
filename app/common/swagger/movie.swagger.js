@@ -296,6 +296,18 @@ const movie = {
             }
         },
     },
+    "/api/movies/list-banner": {
+        get: {
+            tags: ["Landing Page"],
+            summary: "Get List Banner",
+            description: "Get List Banner",
+            responses: {
+                "200": {
+                    description: "Success",
+                },
+            }
+        },
+    }
 }
 
 module.exports = movie
