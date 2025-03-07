@@ -12,11 +12,11 @@ router.post("/update", authenticateJWT, checkAdminRole, movieAdminController.upd
 router.post("/delete", authenticateJWT, checkAdminRole, movieAdminController.deleteMovie);
 router.post("/update-status", authenticateJWT, checkAdminRole, movieAdminController.updateStatusMovie);
 router.post("/find-movie", authenticateJWT, checkAdminRole, movieAdminController.findMovie)
-router.post("/find-schedule", movieAdminController.findSchedule)
 router.post("/create-schedule", authenticateJWT, checkAdminRole, movieAdminController.createSchedule)
 
 // Landing Page Only
 router.get("/", movieController.getMovies);
 router.post("/detail", movieController.getMovieDetail)
+router.post("/find-schedule", movieAdminController.findSchedule)
 
 module.exports = router;

@@ -26,10 +26,6 @@ const deleteImage = async (req, res) => {
 
     const result = await deleteFromCloudinary(public_id);
 
-    if (result.result !== 'ok') {
-      return res.status(400).json({ error: 'Failed to delete image' });
-    }
-
     res.status(200).json({ message: 'Image deleted successfully' });
   } catch (error) {
     res.status(500).json({ error: error.message });
