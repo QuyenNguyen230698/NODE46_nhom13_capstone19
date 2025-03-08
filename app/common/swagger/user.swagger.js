@@ -72,7 +72,7 @@ const user = {
                             email: {
                                 type: "string",
                                 format: "email",
-                                example: "q4@gmail.com"
+                                example: "user@gmail.com"
                             },
                             password: {
                                 type: "string",
