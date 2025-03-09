@@ -21,24 +21,15 @@ ShowScheduleSchema.pre('save', async function (next) {
   next();
 });
 
-// Pre-save hook to populate 'seat' with 160 chair objects
 ShowScheduleSchema.pre('save', async function(next) {
   try {
     const chairs = [];
     for (let i = 1; i <= 160; i++) {
-      const chair = new Chair({
-        maGhe: i,
-        tenGhe: `${i}`,
-        loaiGhe: (i >= 35 && i <= 46) 
-        || (i >= 51 && i <= 62) 
-        || (i >= 67 && i <= 78) 
-        || (i >= 83 && i <= 94) 
-        || (i >= 99 && i <= 110) 
-        || (i >= 115 && i <= 126) ? 'vip' : 'normal',
-        maRap: this.maRap
-      });
-      await chair.save();
-      chairs.push(chair);
+      const chair = await Chair.findOne({ maGhe: i });
+      if (chair) {
+        chair.maRap = this.maRap; // Update maRap if needed
+        chairs.push(chair);
+      }
     }
     this.seat = chairs;
     next();

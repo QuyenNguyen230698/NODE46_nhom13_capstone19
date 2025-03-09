@@ -4,7 +4,7 @@ const ChairSchema = new mongoose.Schema(
   {
     maGhe: { type: Number, required: true },
     tenGhe: { type: String, required: true },
-    loaiGhe: { type: String, required: true, default: "normal" },
+    loaiGhe: { type: String, required: true, default: "THUONG" },
     maRap: { type: Number, required: true },
     placed: { type: Boolean, default: false },
     accountPlaced: { type: String, default: "" },
