@@ -37,35 +37,37 @@ const theaterServices = {
     },
     createBooking: async (email, maLichChieu, danhSachVe) => {
         try {
+
+            const showSchedule = await ShowSchedule.findOne({ maLichChieu });
+            if (!showSchedule) {
+                throw new Error('Show schedule not found');
+            }
+
+            // Tạo booking mới
             const newBooking = new Booking({
                 email,
                 maLichChieu,
                 danhSachVe
             });
             await newBooking.save();
-            const updatedSchedule = await ShowSchedule.findOne({ maLichChieu });
-            if (updatedSchedule) {
-                updatedSchedule.seat.forEach(seat => {
-                    danhSachVe.forEach(item => {
-                        if (item.maGhe === seat.maGhe) {
-                            item.placed = true;
-                            item.accountPlaced = email;
-                        }
-                    });
-                })
-                try {
-                    await updatedSchedule.save();
-                    console.log('Schedule saved successfully');
-                } catch (error) {
-                    console.error('Error saving updated schedule:', error);
-                }
-            }
+    
+            // Lấy danh sách mã ghế cần cập nhật
+            const maGheList = danhSachVe.map(item => item.maGhe);
+    
+            // Cập nhật trạng thái placed và accountPlaced của ghế
+            await ShowSchedule.updateMany(
+                { maLichChieu, "seat.maGhe": { $in: maGheList } },
+                { $set: { "seat.$[elem].placed": true, "seat.$[elem].accountPlaced": email } },
+                { arrayFilters: [{ "elem.maGhe": { $in: maGheList } }] }
+            );
+    
             return responseSuccess('Booking created successfully', newBooking);
         } catch (error) {
             console.error('Error creating booking:', error);
             throw new Error('Failed to create booking');
         }
     }
+    
 }
 
 module.exports = { theaterServices };
