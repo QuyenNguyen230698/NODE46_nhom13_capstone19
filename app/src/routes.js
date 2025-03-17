@@ -8,11 +8,13 @@ const userRoutes = require('../routes/admin/user.routes');
 const movieRoutes = require('../routes/system/movie.routes');
 const theaterRoutes = require('../routes/system/theater.routes');
 const cloudinaryRoutes = require('../routes/cloudinary/cloudinary.routes');
+const emailRoutes = require('../routes/send-email/email.routes');
 
 router.use('/users', userRoutes);
 router.use('/movies', movieRoutes);
 router.use('/theaters', theaterRoutes);
 router.use('/cloudinary', cloudinaryRoutes);
+router.use('/email', emailRoutes);
 
 router.use('/api-docs', swaggerUi.serve);
 router.get('/api-docs', (req, res) => {
