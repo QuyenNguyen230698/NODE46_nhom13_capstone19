@@ -7,4 +7,8 @@ module.exports = {
   refreshTokenSecret: process.env.REFRESH_TOKEN_SECRET,
   tokenExpiration: process.env.TOKEN_EXPIRATION || '15m',
   refreshTokenExpiration: process.env.REFRESH_TOKEN_EXPIRATION || '7d',
+  emailHost: process.env.EMAIL_HOST,
+  emailPort: process.env.EMAIL_PORT,
+  emailUser: process.env.EMAIL_USER,
+  emailPass: process.env.EMAIL_PASS
 };
