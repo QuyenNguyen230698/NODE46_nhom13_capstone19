@@ -13,10 +13,6 @@ router.post("/send-email", async (req, res) => {
   try {
     const { to, subject, name, path } = req.body;
 
-    if (!Array.isArray(to) || to.length === 0) {
-      return res.status(400).json({ error: "Invalid 'to' field. Must be an array of email addresses." });
-    }
-
     if (!subject || !name || !path) {
       return res.status(400).json({ error: "Missing email parameters" });
     }
@@ -29,17 +25,22 @@ router.post("/send-email", async (req, res) => {
         subject,
         templateData: { name, path },
         status: "pending",
+        isOpen: false, // Mặc định chưa mở email
       });
 
       const savedEmail = await newEmail.save();
       emailRecords.push(savedEmail);
+
+      // Thêm tracking pixel vào templateData
+      const trackingUrl = `http://14.225.204.233:4000/track-email/${savedEmail._id}`;
+      const updatedTemplateData = { ...newEmail.templateData, trackingUrl };
 
       // Thêm vào hàng đợi riêng
       await emailQueue.add({
         emailId: savedEmail._id,
         to: recipient,
         subject,
-        templateData: { name, path },
+        templateData: updatedTemplateData,
       });
     }
 
@@ -53,6 +54,33 @@ router.post("/send-email", async (req, res) => {
   }
 });
 
+// ✅ API theo dõi trạng thái mở email
+router.get("/track-email/:emailId", async (req, res) => {
+  try {
+    const { emailId } = req.params;
+
+    const email = await Email.findById(emailId);
+    if (!email) {
+      return res.status(404).send("Email not found");
+    }
+
+    // Cập nhật trạng thái đã mở email
+    email.isOpen = true;
+    await email.save();
+
+    // Trả về ảnh tracking pixel 1x1
+    const pixel = Buffer.from(
+      "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP88xAAAIMAIHSZADYAAAAASUVORK5CYII=",
+      "base64"
+    );
+    res.writeHead(200, { "Content-Type": "image/png" });
+    res.end(pixel);
+  } catch (error) {
+    console.error("❌ Error tracking email:", error);
+    res.status(500).send("Internal server error");
+  }
+});
+
 // ✅ API kiểm tra trạng thái email
 router.get("/emails", async (req, res) => {
   try {
@@ -60,22 +88,6 @@ router.get("/emails", async (req, res) => {
     res.json(emails);
   } catch (error) {
     console.error("❌ Error fetching emails:", error);
-    res.status(500).json({ error: "Internal server error", details: error.message });
-  }
-});
-
-// ✅ API kiểm tra trạng thái của 1 email cụ thể
-router.get("/emails/:emailId", async (req, res) => {
-  try {
-    const email = await Email.findById(req.params.emailId);
-
-    if (!email) {
-      return res.status(404).json({ error: "Email not found" });
-    }
-
-    res.json(email);
-  } catch (error) {
-    console.error("❌ Error fetching email details:", error);
     res.status(500).json({ error: "Internal server error", details: error.message });
   }
 });

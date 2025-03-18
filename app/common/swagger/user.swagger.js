@@ -805,6 +805,25 @@ const user = {
                 }
             }
         }
+    },
+
+    "/api/email/emails": {
+        get: {
+            tags: ["Email"],
+            summary: "Get Emails Process",
+            description: "Get all emails process!",
+            responses: {
+                "200": {
+                    description: "Get all emails process successfully",
+                },
+                "400": {
+                    description: "Bad Request",
+                },
+                "401": {
+                    description: "Unauthorized",
+                }
+            }
+        }
     }
 }
 
