@@ -1,6 +1,8 @@
 const User = require("../../models/admin/user.model");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const emailQueue = require("../../configs/redis");
+const Email = require("../../models/send-email/email.models");
 const { responseSuccess } = require('../../common/helpers/responsive.helper');
 const { ACCESS_TOKEN_SECRET, ACCESS_TOKEN_EXPIRES } = require('../../common/constant/app.constant');
 
@@ -65,17 +67,43 @@ const userServices = {
 
   registerUser: async (username, email, password, phoneNumber) => {
     try {
-      // Hash the password
+      // Hash password
       const hashedPassword = await bcrypt.hash(password, 10);
-
-      // Create the user with hashed password
+  
+      // Create user
       const user = new User({ username, email, password: hashedPassword, phoneNumber });
       await user.save();
-
+  
+      // Chuẩn bị danh sách email cần gửi
+      let emailRecords = [];
+      
+      for (const recipient of [email]) { // Chuyển email thành mảng để dễ xử lý nhiều email
+        const newEmail = new Email({
+          to: recipient,
+          subject: "Welcome to our Theater",
+          templateData: { name: username, path: "thanks/index.ejs" },
+          status: "pending",
+        });
+  
+        // Lưu vào DB
+        const savedEmail = await newEmail.save();
+        emailRecords.push(savedEmail);
+  
+        // Thêm vào hàng đợi để gửi email
+        await emailQueue.add({
+          emailId: savedEmail._id,
+          to: recipient,
+          subject: "Welcome to our Theater",
+          templateData: { name: username, path: "thanks/index.ejs" },
+        });
+      }
+  
+      console.log(`📧 Email(s) queued for ${emailRecords.length} recipient(s)`);
+  
       return responseSuccess(`User ${username} created successfully`);
     } catch (error) {
-      console.error('Error registering user:', error);
-      throw new Error('Failed to register user');
+      console.error("❌ Error registering user:", error);
+      throw new Error("Failed to register user");
     }
   },
 
