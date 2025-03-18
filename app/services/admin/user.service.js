@@ -74,38 +74,38 @@ const userServices = {
       const user = new User({ username, email, password: hashedPassword, phoneNumber });
       await user.save();
   
-      // Chuẩn bị danh sách email cần gửi
-      let emailRecords = [];
-      
-      for (const recipient of [email]) { // Chuyển email thành mảng để dễ xử lý nhiều email
-        const newEmail = new Email({
-          to: recipient,
-          subject: "Welcome to our Theater",
-          templateData: { name: username, path: "thanks/index.ejs" },
-          status: "pending",
-        });
+      // Tạo email trong database
+      const newEmail = new Email({
+        to: email,
+        subject: "Welcome to our Theater",
+        templateData: { name: username, path: "thanks/index.ejs" },
+        status: "pending",
+        isOpen: false, // Mặc định chưa mở email
+      });
   
-        // Lưu vào DB
-        const savedEmail = await newEmail.save();
-        emailRecords.push(savedEmail);
+      // Lưu email vào DB
+      const savedEmail = await newEmail.save();
   
-        // Thêm vào hàng đợi để gửi email
-        await emailQueue.add({
-          emailId: savedEmail._id,
-          to: recipient,
-          subject: "Welcome to our Theater",
-          templateData: { name: username, path: "thanks/index.ejs" },
-        });
-      }
+      // ✅ Thêm tracking pixel vào templateData
+      const trackingUrl = `http://14.225.204.233:4000/api/email/track-email/${savedEmail._id}`;
+      const updatedTemplateData = { ...savedEmail.templateData, trackingUrl };
   
-      console.log(`📧 Email(s) queued for ${emailRecords.length} recipient(s)`);
+      // ✅ Thêm vào hàng đợi gửi email
+      await emailQueue.add({
+        emailId: savedEmail._id,
+        to: email,
+        subject: "Welcome to our Theater",
+        templateData: updatedTemplateData, // Gửi template có tracking pixel
+      });
+  
+      console.log(`📧 Email queued for ${email}`);
   
       return responseSuccess(`User ${username} created successfully`);
     } catch (error) {
       console.error("❌ Error registering user:", error);
       throw new Error("Failed to register user");
     }
-  },
+  },  
 
   loginUser: async (email, password) => {
     // Find the user by email
