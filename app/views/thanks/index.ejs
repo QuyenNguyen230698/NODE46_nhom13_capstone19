@@ -6,24 +6,7 @@
   <meta name="x-apple-disable-message-reformatting">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta content="telephone=no" name="format-detection">
-  <title>Thanks For Joining Us</title><!--[if (mso 16)]>
-    <style type="text/css">
-    a {text-decoration: none;}
-    </style>
-    <![endif]--><!--[if gte mso 9]><style>sup { font-size: 100% !important; }</style><![endif]--><!--[if gte mso 9]>
-<noscript>
-         <xml>
-           <o:OfficeDocumentSettings>
-           <o:AllowPNG></o:AllowPNG>
-           <o:PixelsPerInch>96</o:PixelsPerInch>
-           </o:OfficeDocumentSettings>
-         </xml>
-      </noscript>
-<![endif]--><!--[if mso]><xml>
-    <w:WordDocument xmlns:w="urn:schemas-microsoft-com:office:word">
-      <w:DontUseAdvancedTypographyReadingMail/>
-    </w:WordDocument>
-    </xml><![endif]-->
+  <title>Thanks For Joining Us</title>
   <style type="text/css">
 .rollover:hover .rollover-first {
   max-height:0px!important;
@@ -74,11 +57,7 @@ a[x-apple-data-detectors],
 </style>
  </head>
  <body class="body" style="width:100%;height:100%;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;padding:0;Margin:0">
-  <div dir="ltr" class="es-wrapper-color" lang="en" style="background-color:#FAFAFA"><!--[if gte mso 9]>
-			<v:background xmlns:v="urn:schemas-microsoft-com:vml" fill="t">
-				<v:fill type="tile" color="#fafafa"></v:fill>
-			</v:background>
-		<![endif]-->
+  <div dir="ltr" class="es-wrapper-color" lang="en" style="background-color:#FAFAFA">
    <table width="100%" cellspacing="0" cellpadding="0" class="es-wrapper" role="none" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;padding:0;Margin:0;width:100%;height:100%;background-repeat:repeat;background-position:center top;background-color:#FAFAFA">
      <tr>
       <td valign="top" style="padding:0;Margin:0">
@@ -259,7 +238,8 @@ a[x-apple-data-detectors],
        </table></td>
      </tr>
    </table>
-   <img src="<%= templateData.trackingUrl %>" width="1" height="1" style="display:none;">
   </div>
- </body>
+    <!-- Tracking Pixel -->
+    <img src="<%= trackingUrl %>" width="1" height="1" style="display:none;" alt="">
+</body>
 </html>
