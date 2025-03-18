@@ -32,7 +32,7 @@ router.post("/send-email", async (req, res) => {
       emailRecords.push(savedEmail);
 
       // Thêm tracking pixel vào templateData
-      const trackingUrl = `http://14.225.204.233:4000/track-email/${savedEmail._id}`;
+      const trackingUrl = `http://14.225.204.233:4000/api/email/track-email/${savedEmail._id}`;
       const updatedTemplateData = { ...newEmail.templateData, trackingUrl };
 
       // Thêm vào hàng đợi riêng
