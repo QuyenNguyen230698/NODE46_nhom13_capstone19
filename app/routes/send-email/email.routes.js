@@ -12,14 +12,14 @@ router.get("/thanks", (req, res) => {
 router.post("/send-email", async (req, res) => {
   try {
     const { to, subject, name, path } = req.body;
-
+  
     if (!subject || !name || !path) {
       return res.status(400).json({ error: "Missing email parameters" });
     }
-
+  
     let emailRecords = [];
-
-    for (const recipient of to) {
+  
+    for (const recipient of Array.isArray(to) ? to : [to]) { // Đảm bảo 'to' là một mảng
       const newEmail = new Email({
         to: recipient,
         subject,
@@ -27,15 +27,22 @@ router.post("/send-email", async (req, res) => {
         status: "pending",
         isOpen: false, // Mặc định chưa mở email
       });
-
+  
       const savedEmail = await newEmail.save();
       emailRecords.push(savedEmail);
-
-      // Thêm tracking pixel vào templateData
+  
+      // ✅ Thêm tracking pixel vào templateData
       const trackingUrl = `http://14.225.204.233:4000/api/email/track-email/${savedEmail._id}`;
-      const updatedTemplateData = { ...newEmail.templateData, trackingUrl };
-
-      // Thêm vào hàng đợi riêng
+      const updatedTemplateData = { 
+        name, // Đảm bảo có name
+        path, // Đảm bảo có path
+        ...(savedEmail.templateData || {}), 
+        trackingUrl 
+      };
+      
+      console.log("📬 Data pushed to queue:", JSON.stringify(updatedTemplateData, null, 2));
+  
+      // ✅ Thêm vào hàng đợi gửi email
       await emailQueue.add({
         emailId: savedEmail._id,
         to: recipient,
@@ -43,7 +50,7 @@ router.post("/send-email", async (req, res) => {
         templateData: updatedTemplateData,
       });
     }
-
+  
     res.json({
       message: "Emails are being processed!",
       emails: emailRecords.map((email) => ({ emailId: email._id, to: email.to })),
@@ -51,7 +58,7 @@ router.post("/send-email", async (req, res) => {
   } catch (error) {
     console.error("❌ Error queueing emails:", error);
     res.status(500).json({ error: "Internal server error", details: error.message });
-  }
+  }  
 });
 
 // ✅ API theo dõi trạng thái mở email
