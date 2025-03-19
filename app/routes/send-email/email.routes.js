@@ -67,7 +67,7 @@ router.get("/track-email/:emailId", async (req, res) => {
   try {
     const { emailId } = req.params;
 
-    // Lấy địa chỉ IP của người mở email
+    // 📌 Lấy địa chỉ IP của người mở email
     let userIp = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
     if (userIp.includes("::ffff:")) {
       userIp = userIp.replace("::ffff:", ""); // Chuyển IPv6-mapped IPv4 về IPv4
@@ -78,23 +78,20 @@ router.get("/track-email/:emailId", async (req, res) => {
       return res.status(404).send("Email not found");
     }
 
-    // 📌 Gọi API lấy vị trí từ IP
-    let locationData = {};
-    try {
-      const geoRes = await axios.get(`http://ip-api.com/json/${userIp}`);
-      if (geoRes.data.status === "success") {
-        locationData = {
-          country: geoRes.data.country,
-          city: geoRes.data.city,
-          lat: geoRes.data.lat,
-          lon: geoRes.data.lon,
-        };
-      }
-    } catch (geoError) {
-      console.error("⚠️ Không lấy được vị trí IP:", geoError.message);
-    }
+    // 📌 Lấy vị trí địa lý từ IP bằng geoip-lite
+    const geo = geoip.lookup(userIp);
+    const locationData = geo
+      ? {
+          country: geo.country || null, // Mã quốc gia (VN, US,...)
+          region: geo.region || null, // Mã vùng (VD: 44 - Hồ Chí Minh)
+          city: geo.city || null, // Thành phố
+          lat: geo.ll ? geo.ll[0] : null, // Vĩ độ
+          lon: geo.ll ? geo.ll[1] : null, // Kinh độ
+          timezone: geo.timezone || null, // Múi giờ
+        }
+      : {};
 
-    // Cập nhật trạng thái đã mở email + lưu IP & vị trí địa lý
+    // 📌 Cập nhật trạng thái đã mở email + lưu IP & vị trí địa lý
     email.isOpen = true;
     email.openedAt = new Date();
     email.openedIp = userIp;
@@ -103,7 +100,7 @@ router.get("/track-email/:emailId", async (req, res) => {
 
     console.log(`📩 Email ${emailId} opened from IP: ${userIp}, Location: ${JSON.stringify(locationData)}`);
 
-    // Trả về ảnh tracking pixel 1x1
+    // 📌 Trả về ảnh tracking pixel 1x1
     const pixel = Buffer.from(
       "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP88xAAAIMAIHSZADYAAAAASUVORK5CYII=",
       "base64"
