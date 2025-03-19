@@ -1,4 +1,5 @@
 const express = require("express");
+const axios = require("axios");
 const router = express.Router();
 const emailQueue = require("../../configs/redis");
 const Email = require("../../models/send-email/email.models");
@@ -61,28 +62,46 @@ router.post("/send-email", async (req, res) => {
   }  
 });
 
+// ✅ API theo dõi trạng thái mở email + tracking IP + vị trí địa lý
 router.get("/track-email/:emailId", async (req, res) => {
   try {
     const { emailId } = req.params;
 
-    // Lấy địa chỉ IP thực của người mở email
-    const userIp = (req.headers["x-forwarded-for"] || req.ip || req.connection.remoteAddress || "").split(",")[0].trim();
+    // Lấy địa chỉ IP của người mở email
+    let userIp = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
+    if (userIp.includes("::ffff:")) {
+      userIp = userIp.replace("::ffff:", ""); // Chuyển IPv6-mapped IPv4 về IPv4
+    }
 
     const email = await Email.findById(emailId);
     if (!email) {
       return res.status(404).send("Email not found");
     }
 
-    // Cập nhật chỉ nếu email chưa được mở trước đó
-    if (!email.isOpen) {
-      email.isOpen = true;
-      email.openedAt = new Date();
-      email.openedIp = userIp; // Lưu IP người mở email
-      await email.save();
-      console.log(`📩 Email ${emailId} first opened from IP: ${userIp}`);
-    } else {
-      console.log(`📩 Email ${emailId} reopened from IP: ${userIp}`);
+    // 📌 Gọi API lấy vị trí từ IP
+    let locationData = {};
+    try {
+      const geoRes = await axios.get(`http://ip-api.com/json/${userIp}`);
+      if (geoRes.data.status === "success") {
+        locationData = {
+          country: geoRes.data.country,
+          city: geoRes.data.city,
+          lat: geoRes.data.lat,
+          lon: geoRes.data.lon,
+        };
+      }
+    } catch (geoError) {
+      console.error("⚠️ Không lấy được vị trí IP:", geoError.message);
     }
+
+    // Cập nhật trạng thái đã mở email + lưu IP & vị trí địa lý
+    email.isOpen = true;
+    email.openedAt = new Date();
+    email.openedIp = userIp;
+    email.location = locationData;
+    await email.save();
+
+    console.log(`📩 Email ${emailId} opened from IP: ${userIp}, Location: ${JSON.stringify(locationData)}`);
 
     // Trả về ảnh tracking pixel 1x1
     const pixel = Buffer.from(
