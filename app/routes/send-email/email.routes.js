@@ -61,19 +61,28 @@ router.post("/send-email", async (req, res) => {
   }  
 });
 
-// ✅ API theo dõi trạng thái mở email
 router.get("/track-email/:emailId", async (req, res) => {
   try {
     const { emailId } = req.params;
+
+    // Lấy địa chỉ IP thực của người mở email
+    const userIp = (req.headers["x-forwarded-for"] || req.ip || req.connection.remoteAddress || "").split(",")[0].trim();
 
     const email = await Email.findById(emailId);
     if (!email) {
       return res.status(404).send("Email not found");
     }
 
-    // Cập nhật trạng thái đã mở email
-    email.isOpen = true;
-    await email.save();
+    // Cập nhật chỉ nếu email chưa được mở trước đó
+    if (!email.isOpen) {
+      email.isOpen = true;
+      email.openedAt = new Date();
+      email.openedIp = userIp; // Lưu IP người mở email
+      await email.save();
+      console.log(`📩 Email ${emailId} first opened from IP: ${userIp}`);
+    } else {
+      console.log(`📩 Email ${emailId} reopened from IP: ${userIp}`);
+    }
 
     // Trả về ảnh tracking pixel 1x1
     const pixel = Buffer.from(
